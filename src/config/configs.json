@@ -1,0 +1,14 @@
+{
+    "userName": "admin",
+    "pass": "123asd",
+    "dataBase": "planoSaoLuis",
+    "useNewUrlParser": true,
+    "useUnifiedTopology": true,
+    "useCreateIndex": true,
+
+    "saltRounds": 6,
+    
+    "secret": "@biscoitoDaSorte",
+    "expiresIn": "5d"
+}
+
