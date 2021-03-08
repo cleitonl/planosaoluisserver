@@ -9,7 +9,7 @@ module.exports = {
   },
  
   async postUserTimes(req, res) {
-    const now = moment();
+    const now = moment().subtract(3, 'h');
     try {
       const currUserTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
       if (currUserTime && moment(currUserTime.date).isSame(now, 'day')) {
