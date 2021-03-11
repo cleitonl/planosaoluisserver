@@ -9,42 +9,44 @@ module.exports = {
   },
  
   async postUserTimes(req, res) {
-    const now = moment().subtract(3, 'h');
+    const now = moment();
     try {
-      const currUserTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
-      if (currUserTime && moment(currUserTime.date).isSame(now, 'day')) {
-        const lastTime = await currUserTime.times[currUserTime.times.length - 1]
-        const timeLength = Object.keys(lastTime).length
-        if (timeLength === 2) {
-          currUserTime.times.push({ in: now.format('HH:mm') })
+      const userTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
+      const lastTime = userTime && userTime.times[userTime.times.length - 1]
+      const timeLength = userTime && await Object.keys(lastTime).length
+
+      if (userTime === null) {
+        let newUserTime = new UserTime()
+        newUserTime.date = now;
+        newUserTime.times = [{ in: now.format('HH:mm') }];
+        newUserTime.userId = req.user._id;
+        await newUserTime.save()
+        await User.findByIdAndUpdate(req.user._id, { isWorking: true })
+      } else {
+        if (timeLength === 2 || timeLength === 0) {
+          if (userTime && moment(userTime.date).isSame(now, 'day')) {
+            userTime.times.push({ in: now.format('HH:mm') })
           await User.findByIdAndUpdate(req.user._id, {isWorking: true})
+          } else {
+            let newUserTime = new UserTime()
+            newUserTime.date = now;
+            newUserTime.times = [{ in: now.format('HH:mm') }];
+            newUserTime.userId = req.user._id;
+            await newUserTime.save()
+            await User.findByIdAndUpdate(req.user._id, { isWorking: true })
+          }
         } else {
-          currUserTime.times[currUserTime.times.length - 1].out = now.format("HH:mm")
-          await User.findByIdAndUpdate(req.user._id, {isWorking: false})
-            var sumIn = moment(currUserTime.times[currUserTime.times.length - 1].in, "HH:mm")
-            var sumOut = moment(now.format("HH:mm"), "HH:mm")
-            var diff = moment.utc(sumOut).diff(moment(sumIn))
-            currUserTime.totalTimes = moment(currUserTime.totalTimes, "HH:mm").add(moment.duration(diff)).format("HH:mm")
+          userTime.times[userTime.times.length - 1].out = now.format("HH:mm")
+          await User.findByIdAndUpdate(req.user._id, { isWorking: false })
         }
 
-        const updatedUserTime = new UserTime(currUserTime);
+        const updatedUserTime = new UserTime(userTime);
         await updatedUserTime.save()
-        res.status(200).json({
-          success: true,
-          message: 'Ponto Cadastrado!'
-        })
-      } else {
-        const userTime = new UserTime()
-        userTime.date = now;
-        userTime.times = [{ in: now.format('HH:mm') }];
-        userTime.userId = req.user._id;
-        await userTime.save()
-        await User.findByIdAndUpdate(req.user._id, {isWorking: true})
-        res.status(201), res.json({
-          success: true,
-          message: 'Novo Ponto Cadastrado!',
-        })
       }
+      res.status(200).json({
+        success: true,
+        message: 'Ponto Cadastrado!'
+      })
     } catch (error) {
       res.status(400), res.json({
         success: false,
