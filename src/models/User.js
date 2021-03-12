@@ -9,9 +9,10 @@ const { secret, expiresIn } = require('../config/configs.json');
 const UserSchema = new Schema({
   fullName: { type: String, required: true },
   cpf: { type: String, required: true, unique: true },
-  email: { type: String, required: true },
+  email: { type: String },
   phone: { type: String, required: true },
   password: { type: String, required: true },
+  company: { type: String },
   isWorking: { type: Boolean },
   role: {
     type: String,
