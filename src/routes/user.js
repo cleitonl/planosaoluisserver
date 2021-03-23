@@ -13,13 +13,13 @@ userRoutes.route('/')
   .post(checkRole(['ADMIN']), usersControllers.createUser)
 
 userRoutes.route('/all')
-.get(checkRole(['ADMIN', 'PUBLIC']), usersControllers.findAllUsers)
+  .get(checkRole(['ADMIN', 'PUBLIC']), usersControllers.findAllUsers)
 
 userRoutes.route('/working')
-.get(checkRole(['ADMIN']), usersControllers.findWorkingUser)
+  .get(checkRole(['ADMIN']), usersControllers.findWorkingUser)
 
 userRoutes.route('/:_id')
-.all(checkRole(['ADMIN', 'PUBLIC']))
-.put(usersControllers.updateUser)
-.delete(usersControllers.deleteUser)
+  .all(checkRole(['ADMIN', 'PUBLIC']))
+  .put(usersControllers.updateUser)
+  .delete(usersControllers.deleteUser)
 module.exports = userRoutes;
