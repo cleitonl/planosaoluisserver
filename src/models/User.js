@@ -29,7 +29,6 @@ UserSchema.pre('save', function () {
   try {
     var hash = bcrypt.hashSync(user.password, saltRounds);
     user.password = hash;
-    console.log(hash)
   } catch (error) {
     console.log(error)
   }
@@ -51,9 +50,15 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
 UserSchema.method({
   comparePassword: async function (password, callback) {
     var user = this;
+    console.log(password, user.password)
     const match = await bcrypt.compare(password, user.password);
-    return callback(match);
+    try {
+      callback(match);
+    } catch (error) {
+      console.log(error);
+    }
   },
+
   generateToken: function (payload) {
     return jwt.sign(payload, secret,
       {

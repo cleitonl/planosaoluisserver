@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const UserTime = require('../models/UserTime');
 const moment = require('moment');
+const mongoose = require('mongoose');
 
 module.exports = {
   
@@ -8,7 +9,7 @@ module.exports = {
     return res.status(200).json({ ok: 'bem vindo A UserTime' });
   },
  
-  async postUserTimes(req, res) {
+  async postUserTime(req, res) {
     const now = moment();
     try {
       const userTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
@@ -57,7 +58,7 @@ module.exports = {
   
   async getAllUserTimes(req, res) {
     try {
-      const currUserTimes = await UserTime.find({ userId: req.user._id }).sort({ "date": -1 })
+      const currUserTimes = await UserTime.find({ userId: req.user._id }).sort({ "date": -1 }).limit(15)
         res.status(200).json({
           success: true,
           data: currUserTimes
@@ -72,7 +73,50 @@ module.exports = {
   
   async getUserTimes(req, res) {
     try {
-      const currUserTimes = await UserTime.find({ userId: req.params._id }).sort({ "date": -1 })
+      const currUserTimes = await UserTime.aggregate([
+        {
+          $addFields: {
+            "month": { $month: '$date' },
+            "year": { $year: '$date' }
+          }
+        },
+        {
+          $match: {
+            userId: mongoose.Types.ObjectId(req.params.userId),
+            year: req.body.year,
+            month: req.body.month
+          }
+        }
+      ])
+      res.status(200).json({
+        success: true,
+        data: currUserTimes
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
+
+  async putUserTime(req, res) {
+    try {
+      const currUserTimes = await UserTime.aggregate([
+        {
+          $addFields: {
+            "month": { $month: '$date' },
+            "year": { $year: '$date' }
+          }
+        },
+        {
+          $match: {
+            userId: mongoose.Types.ObjectId(req.params.userId),
+            year: req.body.year,
+            month: req.body.month
+          }
+        }
+      ])
         res.status(200).json({
           success: true,
           data: currUserTimes
@@ -84,4 +128,21 @@ module.exports = {
       })
     }
   },
+
+  async deleteUserTime(req, res) {
+    try {
+      await UserTime.findByIdAndDelete(req.params._id)
+      res.status(200).json({
+        success: true,
+        message: 'Ponto removido!'
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
+
+
 }

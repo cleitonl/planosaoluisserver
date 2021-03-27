@@ -61,7 +61,7 @@ module.exports = {
   
   async findAllUsers (req, res) {
     try {
-      const user = await User.find()
+      const user = await User.find().sort({ "fullName": 1 })
       res.status(200).json({
         success: true,
         data: user
