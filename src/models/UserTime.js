@@ -13,14 +13,14 @@ const UserTimeSchema = new Schema({
 mongoose.set('debug', true);
 
 UserTimeSchema.pre('save', function () {
-  var user = this;
-  user.totalTimes = "00:00"
-  user.times.map((time) => {
+  var userTimes = this;
+  userTimes.totalTimes = "00:00"
+  userTimes.times.map((time) => {
     if (Object.keys(time).length === 2) {
       let In = moment(time.in, "HH:mm")
       let Out = moment(time.out, "HH:mm")
       let diff = moment.utc(Out).diff(moment(In))
-      user.totalTimes = moment(user.totalTimes, "HH:mm").add(moment.duration(diff)).format("HH:mm")
+      userTimes.totalTimes = moment(userTimes.totalTimes, "HH:mm").add(moment.duration(diff)).format("HH:mm")
     }
   })
 });

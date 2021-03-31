@@ -44,12 +44,13 @@ module.exports = {
     }
   },
   
-  async findWorkingUser (req, res) {
+  async UserResume (req, res) {
     try {
-      const users = await User.count({isWorking: true})
+      const usersWorking = await User.count({ isWorking: true })
+      const usersTotal = await User.count()
       res.status(200).json({
         success: true,
-        data: users
+        data: { usersWorking, usersTotal }
       })
     } catch (error) {
       res.status(400), res.json({

@@ -86,7 +86,8 @@ module.exports = {
             year: req.body.year,
             month: req.body.month
           }
-        }
+        },
+        { $sort: { date: -1 } }
       ])
       res.status(200).json({
         success: true,
@@ -102,26 +103,16 @@ module.exports = {
 
   async putUserTime(req, res) {
     try {
-      const currUserTimes = await UserTime.aggregate([
-        {
-          $addFields: {
-            "month": { $month: '$date' },
-            "year": { $year: '$date' }
-          }
-        },
-        {
-          $match: {
-            userId: mongoose.Types.ObjectId(req.params.userId),
-            year: req.body.year,
-            month: req.body.month
-          }
-        }
-      ])
+      const currUserTime = await UserTime.findById(req.params._id)
+      currUserTime.date = req.body.date
+      currUserTime.times = req.body.times
+      currUserTime.save()
         res.status(200).json({
           success: true,
-          data: currUserTimes
+          data: currUserTime
         })
     } catch (error) {
+      console.log(error)
       res.status(400), res.json({
         success: false,
         message: error,
