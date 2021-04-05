@@ -56,6 +56,25 @@ module.exports = {
     }
   },
   
+  async postNewUserTime(req, res) {
+    const date = moment(req.body.date);
+    try {
+      const user = new UserTime(req.body)
+      user.date = date
+      await user.save()
+
+      res.status(200).json({
+        success: true,
+        message: 'Ponto Cadastrado!'
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
+
   async getAllUserTimes(req, res) {
     try {
       const currUserTimes = await UserTime.find({ userId: req.user._id }).sort({ "date": -1 }).limit(15)
@@ -109,7 +128,8 @@ module.exports = {
       currUserTime.save()
         res.status(200).json({
           success: true,
-          data: currUserTime
+          data: currUserTime,
+          message: 'Ponto Atualizado!'
         })
     } catch (error) {
       console.log(error)

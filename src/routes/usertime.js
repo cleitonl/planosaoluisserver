@@ -16,6 +16,7 @@ userTimeRoutes.route('/user/:userId')
 
 userTimeRoutes.route('/:_id')
   .all(checkRole(['ADMIN']))
+  .post(userTimeControllers.postNewUserTime)
   .put(userTimeControllers.putUserTime)
   .delete(userTimeControllers.deleteUserTime)
 
