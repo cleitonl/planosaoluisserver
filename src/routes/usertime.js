@@ -10,6 +10,11 @@ userTimeRoutes.route('/')
   .post(userTimeControllers.postUserTime)
 //  .put(userTimeControllers.updateUser)
 //  .delete(userTimeControllers.deleteUser)
+
+userTimeRoutes.route('/today')
+  .all(checkRole(['ADMIN', 'PUBLIC']))
+  .get(userTimeControllers.getTimesToday)
+
 userTimeRoutes.route('/user/:userId')
   .all(checkRole(['ADMIN']))
   .post(userTimeControllers.getUserTimes)

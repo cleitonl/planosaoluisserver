@@ -11,6 +11,7 @@ module.exports = {
  
   async postUserTime(req, res) {
     const now = moment();
+    console.log(now)
     try {
       const userTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
       const lastTime = userTime && userTime.times[userTime.times.length - 1]
@@ -18,7 +19,7 @@ module.exports = {
 
       if (userTime === null) {
         let newUserTime = new UserTime()
-        newUserTime.date = now;
+        newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
         newUserTime.times = [{ in: now.format('HH:mm') }];
         newUserTime.userId = req.user._id;
         await newUserTime.save()
@@ -30,7 +31,8 @@ module.exports = {
           await User.findByIdAndUpdate(req.user._id, {isWorking: true})
           } else {
             let newUserTime = new UserTime()
-            newUserTime.date = now;
+            newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
+            console.log(newUserTime.date)
             newUserTime.times = [{ in: now.format('HH:mm') }];
             newUserTime.userId = req.user._id;
             await newUserTime.save()
@@ -60,7 +62,7 @@ module.exports = {
     const date = moment(req.body.date);
     try {
       const user = new UserTime(req.body)
-      user.date = date
+      user.date = date.format('YYYY-MM-DD[T00:00:00.000Z]')
       await user.save()
 
       res.status(200).json({
@@ -106,8 +108,47 @@ module.exports = {
             month: req.body.month
           }
         },
-        { $sort: { date: -1 } }
+        { $sort: { date: 1 } }
       ])
+      res.status(200).json({
+        success: true,
+        data: currUserTimes
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
+
+  async getTimesToday(req, res) {
+    var today = moment.utc().startOf('days').toDate();
+    try {
+      const currUserTimes = await UserTime.aggregate([
+        {
+          $match: { date: { $gte: today } }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        {
+          $unwind: "$user"
+        },
+        {
+          $project: {
+            times: 1,
+            date: 1,
+            totalTimes: 1,
+            user: { fullName: 1 }
+          }
+        }
+        ])
       res.status(200).json({
         success: true,
         data: currUserTimes

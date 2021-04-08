@@ -60,14 +60,18 @@ UserSchema.method({
   },
 
   generateToken: function (payload) {
-    return jwt.sign(payload, secret,
-      {
-        expiresIn
-      }
-    );
+    return jwt.sign(payload, secret);
   }
 });
 
 const User = mongoose.model('User', UserSchema)
 
 module.exports = User;
+
+
+/** return jwt.sign(payload, secret,
+      {
+        expiresIn
+      }
+    );
+  } */

@@ -8,7 +8,6 @@
 
     "saltRounds": 6,
     
-    "secret": "@biscoitoDaSorte",
-    "expiresIn": "5d"
+    "secret": "@biscoitoDaSorte"
 }
 

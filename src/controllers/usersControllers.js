@@ -46,8 +46,8 @@ module.exports = {
   
   async UserResume (req, res) {
     try {
-      const usersWorking = await User.count({ isWorking: true })
-      const usersTotal = await User.count()
+      const usersWorking = await User.countDocuments({ isWorking: true })
+      const usersTotal = await User.countDocuments()
       res.status(200).json({
         success: true,
         data: { usersWorking, usersTotal }

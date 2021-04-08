@@ -5,7 +5,7 @@ const moment = require('moment');
 const UserTimeSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   local: {type: String},
-  date: { type: Date, unique: true },
+  date: { type: Date },
   times: { type: Object},
   totalTimes: { type: String, default: "00:00" }
 });
