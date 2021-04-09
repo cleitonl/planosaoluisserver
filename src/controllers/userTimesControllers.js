@@ -147,6 +147,11 @@ module.exports = {
             totalTimes: 1,
             user: { fullName: 1 }
           }
+        },
+        {
+          $sort: {
+            user: 1
+          }
         }
         ])
       res.status(200).json({
