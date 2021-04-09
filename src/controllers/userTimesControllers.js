@@ -11,12 +11,11 @@ module.exports = {
  
   async postUserTime(req, res) {
     const now = moment();
-    console.log(now)
     try {
       const userTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
       const lastTime = userTime && userTime.times[userTime.times.length - 1]
       const timeLength = userTime && await Object.keys(lastTime).length
-
+      
       if (userTime === null) {
         let newUserTime = new UserTime()
         newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
@@ -26,13 +25,12 @@ module.exports = {
         await User.findByIdAndUpdate(req.user._id, { isWorking: true })
       } else {
         if (timeLength === 2 || timeLength === 0) {
-          if (userTime && moment(userTime.date).isSame(now, 'day')) {
+          if (userTime && moment(userTime.date).isSame(now.format('YYYY-MM-DD[T00:00:00.000Z]'), 'day')) {
             userTime.times.push({ in: now.format('HH:mm') })
           await User.findByIdAndUpdate(req.user._id, {isWorking: true})
           } else {
             let newUserTime = new UserTime()
             newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
-            console.log(newUserTime.date)
             newUserTime.times = [{ in: now.format('HH:mm') }];
             newUserTime.userId = req.user._id;
             await newUserTime.save()
