@@ -25,7 +25,8 @@ module.exports = {
         await User.findByIdAndUpdate(req.user._id, { isWorking: true })
       } else {
         if (timeLength === 2 || timeLength === 0) {
-          if (userTime && moment(userTime.date).isSame(now.format('YYYY-MM-DD[T00:00:00.000Z]'), 'day')) {
+          console.log(moment.utc(userTime.date).format('YYYY-MM-DD[T00:00:00.000Z]') + '   ------     ' + now.format('YYYY-MM-DD[T00:00:00.000Z]'))
+          if (userTime && moment.utc(userTime.date).format('YYYY-MM-DD') === (now.format('YYYY-MM-DD'))) {
             userTime.times.push({ in: now.format('HH:mm') })
           await User.findByIdAndUpdate(req.user._id, {isWorking: true})
           } else {
