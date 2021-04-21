@@ -14,6 +14,13 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   company: { type: String },
   isWorking: { type: Boolean },
+  vacations: { type: Object },
+  vacations: {
+    type: [{
+      start: { type: Date },
+      end: { type: Date }
+    }]
+  },
   role: {
     type: String,
     required: true,

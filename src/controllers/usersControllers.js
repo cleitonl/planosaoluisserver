@@ -1,4 +1,6 @@
 const User = require('../models/User')
+const mongoose = require('mongoose');
+const moment = require('moment');
 
 module.exports = {
   
@@ -44,7 +46,7 @@ module.exports = {
     }
   },
   
-  async UserResume (req, res) {
+  async usersWorking(req, res) {
     try {
       const usersWorking = await User.countDocuments({ isWorking: true })
       const usersTotal = await User.countDocuments()
@@ -60,6 +62,32 @@ module.exports = {
     }
   },
   
+  async usersVacations(req, res) {
+    let date = moment()
+
+    try {
+      const vacationInMonth = await User.countDocuments({
+        'vacations.start': {
+          $gte: date.startOf('month').format('YYYY-MM-DD[T00:00:00.000Z]')
+        }
+      })
+      const vacationInNextMonth = await User.countDocuments({
+        'vacations.start': {
+          $gte: date.add(1, 'M').format('YYYY-MM-DD[T00:00:00.000Z]')
+        }
+      })
+      res.status(200).json({
+        success: true,
+        data: { vacationInMonth, vacationInNextMonth }
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
+
   async findAllUsers (req, res) {
     try {
       const user = await User.find().sort({ "fullName": 1 })
@@ -141,5 +169,64 @@ module.exports = {
     }
   },
 
-  
+  async updateVacations(req, res) {
+    try {
+      await User.findByIdAndUpdate(req.params._id, { vacations: req.body })
+      res.status(200).json({
+        success: true,
+        message: 'Férias Atualizadas!'
+      })
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error
+      })
+    }
+  },
+
+  // now not utilizable
+  async newUserVacations(req, res) {
+    try {
+      await User.findByIdAndUpdate(
+        { _id: req.params._id },
+        { $push: { vacations: req.body } },
+        done
+      )
+      res.status(200).json({
+        success: true,
+        message: 'Férias Atualizadas!'
+      })
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error
+      })
+    }
+  },
+
+  // now not utilizable
+  async findUserVacations(req, res) {
+    let id = mongoose.Types.ObjectId(req.params._id);
+    try {
+      const vacations = await User.aggregate([
+        {
+          $match: { _id: id }
+        },
+        {
+          $project: { vacations: 1 }
+        },
+      ])
+      res.status(200).json({
+        success: true,
+        data: vacations,
+
+      })
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error
+      })
+    }
+  }
+
 }

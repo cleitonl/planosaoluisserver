@@ -10,7 +10,10 @@ module.exports = {
   },
  
   async postUserTime(req, res) {
+    var regExp = /\(([^)]+)\)/;
+    const local = regExp.exec(req.headers['user-agent']);
     const now = moment();
+    console.log(local)
     try {
       const userTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
       const lastTime = userTime && userTime.times[userTime.times.length - 1]
@@ -19,19 +22,21 @@ module.exports = {
       if (userTime === null) {
         let newUserTime = new UserTime()
         newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
+        newUserTime.location = local[1]
         newUserTime.times = [{ in: now.format('HH:mm') }];
         newUserTime.userId = req.user._id;
         await newUserTime.save()
         await User.findByIdAndUpdate(req.user._id, { isWorking: true })
       } else {
         if (timeLength === 2 || timeLength === 0) {
-          console.log(moment.utc(userTime.date).format('YYYY-MM-DD[T00:00:00.000Z]') + '   ------     ' + now.format('YYYY-MM-DD[T00:00:00.000Z]'))
           if (userTime && moment.utc(userTime.date).format('YYYY-MM-DD') === (now.format('YYYY-MM-DD'))) {
             userTime.times.push({ in: now.format('HH:mm') })
+            userTime.location = local[1]
           await User.findByIdAndUpdate(req.user._id, {isWorking: true})
           } else {
             let newUserTime = new UserTime()
             newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
+            newUserTime.location = local[1]
             newUserTime.times = [{ in: now.format('HH:mm') }];
             newUserTime.userId = req.user._id;
             await newUserTime.save()
@@ -39,6 +44,7 @@ module.exports = {
           }
         } else {
           userTime.times[userTime.times.length - 1].out = now.format("HH:mm")
+          userTime.location = local[1]
           await User.findByIdAndUpdate(req.user._id, { isWorking: false })
         }
 
@@ -156,6 +162,30 @@ module.exports = {
       res.status(200).json({
         success: true,
         data: currUserTimes
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
+
+
+  async getTimesDayOff(req, res) {
+    let date = moment()
+    try {
+      const TimesDayOff = await UserTime.countDocuments({
+        'date': {
+          $eq: date.format('YYYY-MM-DD[T00:00:00.000Z]')
+        },
+        'times.in': {
+          $eq: 'Folga'
+        }
+      })
+      res.status(200).json({
+        success: true,
+        data: { TimesDayOff }
       })
     } catch (error) {
       res.status(400), res.json({

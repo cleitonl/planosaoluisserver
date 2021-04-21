@@ -15,8 +15,15 @@ userRoutes.route('/')
 userRoutes.route('/all')
   .get(checkRole(['ADMIN', 'PUBLIC']), usersControllers.findAllUsers)
 
-userRoutes.route('/resume')
-  .get(checkRole(['ADMIN']), usersControllers.UserResume)
+userRoutes.route('/usersWorking')
+  .get(checkRole(['ADMIN']), usersControllers.usersWorking)
+
+userRoutes.route('/usersVacation')
+  .get(checkRole(['ADMIN']), usersControllers.usersVacations)
+
+userRoutes.route('/vacations/:_id')
+  .put(checkRole(['ADMIN']), usersControllers.updateVacations)
+  .get(checkRole(['ADMIN']), usersControllers.findUserVacations)
 
 userRoutes.route('/:_id')
   .all(checkRole(['ADMIN', 'PUBLIC']))

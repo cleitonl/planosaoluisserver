@@ -12,8 +12,13 @@ userTimeRoutes.route('/')
 //  .delete(userTimeControllers.deleteUser)
 
 userTimeRoutes.route('/today')
-  .all(checkRole(['ADMIN', 'PUBLIC']))
+  .all(checkRole(['ADMIN']))
   .get(userTimeControllers.getTimesToday)
+
+userTimeRoutes.route('/dayOff')
+  .all(checkRole(['ADMIN']))
+  .get(userTimeControllers.getTimesDayOff)
+
 
 userTimeRoutes.route('/user/:userId')
   .all(checkRole(['ADMIN']))
