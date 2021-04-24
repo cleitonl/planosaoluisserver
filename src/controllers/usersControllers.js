@@ -68,12 +68,14 @@ module.exports = {
     try {
       const vacationInMonth = await User.countDocuments({
         'vacations.start': {
-          $gte: date.startOf('month').format('YYYY-MM-DD[T00:00:00.000Z]')
+          $gte: date.startOf('month').format('YYYY-MM-DD[T00:00:00.000Z]'),
+          $lte: date.endOf('month').format('YYYY-MM-DD[T00:00:00.000Z]')
         }
       })
       const vacationInNextMonth = await User.countDocuments({
         'vacations.start': {
-          $gte: date.add(1, 'M').format('YYYY-MM-DD[T00:00:00.000Z]')
+          $gte: date.add(1, 'M').format('YYYY-MM-DD[T00:00:00.000Z]'),
+          $lte: date.endOf('month').format('YYYY-MM-DD[T00:00:00.000Z]')
         }
       })
       res.status(200).json({

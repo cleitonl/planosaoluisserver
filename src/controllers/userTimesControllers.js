@@ -128,11 +128,11 @@ module.exports = {
   },
 
   async getTimesToday(req, res) {
-    var today = moment.utc().startOf('days').toDate();
+    var today = new Date(moment().format('YYYY-MM-DD[T00:00:00.000Z]'));
     try {
       const currUserTimes = await UserTime.aggregate([
         {
-          $match: { date: { $gte: today } }
+          $match: { date: { $gte: new Date(today) } }
         },
         {
           $lookup: {
@@ -170,7 +170,6 @@ module.exports = {
       })
     }
   },
-
 
   async getTimesDayOff(req, res) {
     let date = moment()
