@@ -1,10 +1,9 @@
-const User = require('../models/User')
 const UserTime = require('../models/UserTime');
-const moment = require('moment');
+const User = require('../models/User')
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 module.exports = {
-  
   index(req, res) {
     return res.status(200).json({ ok: 'bem vindo A UserTime' });
   },

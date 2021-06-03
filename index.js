@@ -6,6 +6,7 @@ require('./src/db.js')
 
 const userRoutes = require('./src/routes/user');
 const userTimesRoutes = require('./src/routes/usertime');
+const timeRequestRoutes = require('./src/routes/timeRequest');
 
 
 app.use(express.json());
@@ -13,6 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.set('json spaces', 4);
 
+
+app.use('/timeRequest', timeRequestRoutes);
 app.use('/users',userRoutes);
 app.use('/userTimes',userTimesRoutes);
 
