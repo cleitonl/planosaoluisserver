@@ -29,7 +29,7 @@ module.exports = {
     try {
       const timeRequest = await TimeRequest.findById(req.params._id)
       timeRequest.status = req.body.status
-      if (req.body.status === 'Aceito') {
+      if (req.body.status === 'Aprovado') {
         const currUserTime = await UserTime.findById(req.body.timeId)
         currUserTime.date = req.body.date
         currUserTime.times = req.body.times
@@ -84,6 +84,39 @@ module.exports = {
       return res.status(200), res.json({
         success: true,
         data: timeRequest,
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
+
+  async countPendingTimeRequests(req, res) {
+    try {
+      const response = await TimeRequest.aggregate([
+        {
+          $match: {
+            status: "Pendente",
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            count: 1
+          }
+        }
+      ])
+      return res.status(200), res.json({
+        success: true,
+        data: response[0],
       })
     } catch (error) {
       res.status(400), res.json({

@@ -6,8 +6,15 @@ const timesRequestsControllers = require('../controllers/timesRequestsController
 
 timeRequest.route('/')
   .all(checkRole(['ADMIN', 'PUBLIC']))
-  .get(timesRequestsControllers.listAllTimeRequest)
   .post(timesRequestsControllers.createTimeRequest)
+
+timeRequest.route('/listAll')
+  .all(checkRole(['ADMIN']))
+  .get(timesRequestsControllers.listAllTimeRequest)
+
+timeRequest.route('/Countpendings')
+  .all(checkRole(['ADMIN']))
+  .get(timesRequestsControllers.countPendingTimeRequests)
 
 timeRequest.route('/:_id')
   .all(checkRole(['ADMIN', 'PUBLIC']))
