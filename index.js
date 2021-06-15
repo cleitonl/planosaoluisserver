@@ -1,24 +1,32 @@
 const express = require('express');
-const app = express();
 const cors = require('cors')
 const PORT = process.env.PORT || 5000
+
+const app = express();
+
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
+
 require('./src/db.js')
 
-const userRoutes = require('./src/routes/user');
-const userTimesRoutes = require('./src/routes/usertime');
 const timeRequestRoutes = require('./src/routes/timeRequest');
+const userTimesRoutes = require('./src/routes/usertime');
+const userRoutes = require('./src/routes/user');
 
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.set('json spaces', 4);
+app.use(express.json());
 
+app.use((req, res, next) => {
+  req.io = io;
+  next()
+});
 
 app.use('/timeRequest', timeRequestRoutes);
-app.use('/users',userRoutes);
-app.use('/userTimes',userTimesRoutes);
+app.use('/userTimes', userTimesRoutes);
+app.use('/users', userRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Example app listening at http://localhost:${PORT}`)
+server.listen(PORT, () => {
+  console.log(`Example app listening at Port: ${PORT}`)
 });

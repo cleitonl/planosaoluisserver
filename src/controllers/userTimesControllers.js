@@ -9,10 +9,7 @@ module.exports = {
   },
  
   async postUserTime(req, res) {
-    var regExp = /\(([^)]+)\)/;
-    const local = regExp.exec(req.headers['user-agent']);
     const now = moment();
-    console.log(local)
     try {
       const userTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
       const lastTime = userTime && userTime.times[userTime.times.length - 1]
@@ -21,34 +18,35 @@ module.exports = {
       if (userTime === null) {
         let newUserTime = new UserTime()
         newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
-        newUserTime.location = local[1]
         newUserTime.times = [{ in: now.format('HH:mm') }];
         newUserTime.userId = req.user._id;
-        await newUserTime.save()
         await User.findByIdAndUpdate(req.user._id, { isWorking: true })
+        await newUserTime.save()
+        req.io.emit('time', `${req.user.name} bateu o ponto de entrada!`)
       } else {
         if (timeLength === 2 || timeLength === 0) {
           if (userTime && moment.utc(userTime.date).format('YYYY-MM-DD') === (now.format('YYYY-MM-DD'))) {
-            userTime.times.push({ in: now.format('HH:mm') })
-            userTime.location = local[1]
-          await User.findByIdAndUpdate(req.user._id, {isWorking: true})
+            let updatedUserTime = new UserTime(userTime);
+            updatedUserTime.times.push({ in: now.format('HH:mm') })
+            await User.findByIdAndUpdate(req.user._id, { isWorking: true })
+            await updatedUserTime.save()
+            req.io.emit('time', `${req.user.name} bateu o ponto de entrada!`)
           } else {
             let newUserTime = new UserTime()
             newUserTime.date = now.format('YYYY-MM-DD[T00:00:00.000Z]');
-            newUserTime.location = local[1]
             newUserTime.times = [{ in: now.format('HH:mm') }];
             newUserTime.userId = req.user._id;
             await newUserTime.save()
             await User.findByIdAndUpdate(req.user._id, { isWorking: true })
+            req.io.emit('time', `${req.user.name} bateu o ponto de entrada!`)
           }
         } else {
-          userTime.times[userTime.times.length - 1].out = now.format("HH:mm")
-          userTime.location = local[1]
+          let updatedUserTime = new UserTime(userTime);
+          updatedUserTime.times[userTime.times.length - 1].out = now.format("HH:mm")
+          await updatedUserTime.save()
           await User.findByIdAndUpdate(req.user._id, { isWorking: false })
+          req.io.emit('time', `${req.user.name} bateu o ponto de saída!`)
         }
-
-        const updatedUserTime = new UserTime(userTime);
-        await updatedUserTime.save()
       }
       res.status(200).json({
         success: true,
