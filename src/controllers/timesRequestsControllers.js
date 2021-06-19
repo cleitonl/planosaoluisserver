@@ -29,14 +29,13 @@ module.exports = {
     try {
       const timeRequest = await TimeRequest.findById(req.params._id)
       timeRequest.status = req.body.status
-      if (req.body.status === 'Aprovado') {
-        const currUserTime = await UserTime.findById(req.body.timeId)
-        currUserTime.date = req.body.date
-        currUserTime.times = req.body.times
-        currUserTime.save()
-      }
+
+      const currUserTime = await UserTime.findById(req.body.timeId)
+      currUserTime.date = req.body.date
+      currUserTime.times = req.body.times
 
       await timeRequest.save()
+      await currUserTime.save()
 
       return res.status(200), res.json({
         success: true,
