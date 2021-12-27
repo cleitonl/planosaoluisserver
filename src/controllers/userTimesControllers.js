@@ -81,7 +81,7 @@ module.exports = {
 
   async getAllUserTimes(req, res) {
     try {
-      const currUserTimes = await UserTime.find({ userId: req.user._id }).sort({ "date": -1 }).limit(31)
+      const currUserTimes = await UserTime.find({ userId: req.user._id }).sort({ "date": -1 }).limit(30)
         res.status(200).json({
           success: true,
           data: currUserTimes
