@@ -9,7 +9,7 @@ module.exports = {
   },
  
   async postUserTime(req, res) {
-    const now = moment().locale('pt-br');
+    const now = moment().subtract(3, 'hours');
     try {
       const userTime = await UserTime.findOne({ userId: req.user._id }).sort({ "date": -1 })
       const lastTime = userTime && userTime.times[userTime.times.length - 1]
