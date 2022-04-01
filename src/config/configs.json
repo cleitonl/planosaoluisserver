@@ -1,7 +1,7 @@
 {
     "userName": "admin",
     "pass": "123asd",
-    "dataBase": "planoSaoLuis",
+    "dataBase": "SaoluisDev",
     "useNewUrlParser": true,
     "useUnifiedTopology": true,
     "useCreateIndex": true,
