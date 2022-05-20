@@ -20,8 +20,7 @@ const checkRole = (checkRoles) => async (req, res, next) => {
     var user = await User.findById(decodedToken._id) || null;
     
     req.user = {
-      _id: user._id,
-      name: user.fullName.split(' ')[0]
+      _id: user._id
     }
 
     var userRole = user.role

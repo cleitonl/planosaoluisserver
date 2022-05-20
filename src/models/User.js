@@ -56,7 +56,7 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
 UserSchema.method({
   comparePassword: async function (password, callback) {
     var user = this;
-    console.log(password, user.password)
+    //console.log(password, user.password)
     const match = await bcrypt.compare(password, user.password);
     try {
       callback(match);
