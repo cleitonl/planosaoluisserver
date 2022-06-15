@@ -18,9 +18,10 @@ const checkRole = (checkRoles) => async (req, res, next) => {
     var decodedToken = await promisify(jwt.verify)(token, secret);
     
     var user = await User.findById(decodedToken._id) || null;
-    
     req.user = {
-      _id: user._id
+
+      _id: user._id,
+      name: user.fullName.split(' ')[0]
     }
 
     var userRole = user.role

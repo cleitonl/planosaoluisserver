@@ -5,7 +5,7 @@ const uriProd = `mongodb+srv://${userName}:${pass}@cluster0.lhoc3.mongodb.net/${
 const uriDev = `mongodb://localhost:27017/${dataBase}`;
 const connect = async () => {
   try {
-    await mongoose.connect(uriDev, { useNewUrlParser, useUnifiedTopology, useCreateIndex, useFindAndModify: false });
+    await mongoose.connect(uriProd, { useNewUrlParser, useUnifiedTopology, useCreateIndex, useFindAndModify: false });
     console.log('Db connected!')
   } catch (error) {
     handleError(error);

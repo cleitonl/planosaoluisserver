@@ -14,6 +14,7 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   company: { type: String },
   isWorking: { type: Boolean },
+  pis: { type: String },
   vacations: {
     type: [{
       start: { type: Date },
@@ -28,7 +29,7 @@ const UserSchema = new Schema({
   },
 });
 
-//mongoose.set('debug', true);
+mongoose.set('debug', true);
 
 UserSchema.pre('save', function () {
   var user = this;
