@@ -403,7 +403,7 @@ module.exports = {
 
   async downloadAfd(req, res) {
     try {
-      const file = path.join(__dirname, `../../Afd${req.params.cnpj}.txt`);
+      const file = path.join(__dirname, `../../../Afd${req.params.cnpj}.txt`);
       res.download(file, `Afd${req.params.cnpj}.txt`)
     } catch (error) {
       res.status(400), res.json({
