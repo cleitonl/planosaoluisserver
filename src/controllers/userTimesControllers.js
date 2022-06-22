@@ -267,7 +267,7 @@ module.exports = {
         .findOne({ userId: req.user._id })
         .sort({ "date": -1 })
       const lastTimeRegistry = lastUserRegistry?.times.length || {}
-      if (moment.utc(lastUserRegistry?.date).format('YYYY-MM-DD') === (moment(reqTime).format('YYYY-MM-DD'))) {
+      if ((!lastUserRegistry?.date !== true) && moment.utc(lastUserRegistry?.date).format('YYYY-MM-DD') === (moment(reqTime).format('YYYY-MM-DD'))) {
         if (lastTimeRegistry === 0 || lastTimeRegistry === 2) {
           let updatedUserTime = new UserTime(lastUserRegistry);
           updatedUserTime.times.push({ in: moment(reqTime).format('HH:mm'), location })
@@ -296,6 +296,7 @@ module.exports = {
         message: message
       })
     } catch (error) {
+      console.log(error)
       res.status(400), res.json({
         success: false,
         message: error.data,
