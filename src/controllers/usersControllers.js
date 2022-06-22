@@ -17,6 +17,9 @@ module.exports = {
         })
       } else {
         const user = new User(req.body)
+        user.pis = ("000000000000" + req.body.pis).slice(-12)
+        console.log(user.pis)
+
         await user.save()
         return res.status(201), res.json({
           success: true,

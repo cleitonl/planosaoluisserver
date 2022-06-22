@@ -339,7 +339,10 @@ module.exports = {
           $unwind: "$User"
         },
         {
-          "$match": { "User.company": req.body.company }
+          $match: {
+            "User.company": req.body.company,
+            date: { "$gte": new Date(req.body.dateI), "$lte": new Date(req.body.dateF) },
+          }
         },
         {
           $project: {
@@ -390,6 +393,7 @@ module.exports = {
 
       res.status(200).json({
         success: true,
+        data: currUserTimes,
         message: "Arquivo AFD gerado!"
       })
     } catch (error) {
