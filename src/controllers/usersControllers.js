@@ -17,6 +17,9 @@ module.exports = {
         })
       } else {
         const user = new User(req.body)
+        user.pis = ("000000000000" + req.body.pis).slice(-12)
+        console.log(user.pis)
+
         await user.save()
         return res.status(201), res.json({
           success: true,
@@ -31,7 +34,7 @@ module.exports = {
     }
   },
   
-  async findUser (req, res) {
+  async findUser(req, res) {
     try {
       const user = await User.findById(req.user._id)
       res.status(200).json({
@@ -136,6 +139,7 @@ module.exports = {
   },
 
   async login(req, res) {
+
     try {
       const user = await User.findOne({ cpf: req.body.cpf });
       if (!user) {
@@ -229,6 +233,21 @@ module.exports = {
         message: error
       })
     }
-  }
+  },
+
+  async findUsersByCnpj(req, res) {
+    try {
+      const user = await User.find({ company: req.body.company, pis: { $ne: null } }, { _id: 0, fullName: 1, pis: 1 }).sort({ fullName: 1 })
+      res.status(200).json({
+        success: true,
+        data: user
+      })
+    } catch (error) {
+      res.status(400), res.json({
+        success: false,
+        message: error,
+      })
+    }
+  },
 
 }

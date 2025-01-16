@@ -21,6 +21,9 @@ userRoutes.route('/usersWorking')
 userRoutes.route('/usersVacation')
   .get(checkRole(['ADMIN']), usersControllers.usersVacations)
 
+userRoutes.route('/byCnpj')
+  .post(checkRole(['ADMIN']), usersControllers.findUsersByCnpj)
+
 userRoutes.route('/vacations/:_id')
   .put(checkRole(['ADMIN']), usersControllers.updateVacations)
   .get(checkRole(['ADMIN']), usersControllers.findUserVacations)
